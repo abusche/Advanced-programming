@@ -13,7 +13,7 @@ load_dotenv()
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 
 # Load a local database
-db = SQLDatabase.from_uri("sqlite:///")
+db = SQLDatabase.from_uri("sqlite:///info.db")
 
 # Configuration of the Web page
 st.set_page_config(page_title ="Crous menu ChatBot")
