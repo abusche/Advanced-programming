@@ -9,11 +9,11 @@ from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langgraph.prebuilt import create_react_agent
 
 # Load the environment and the API Key
-load_dotenv()
+load_dotenv("environment/.env")
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 
 # Load a local database
-db = SQLDatabase.from_uri("sqlite:///info.db")
+db = SQLDatabase.from_uri("sqlite:///db/info.db")
 
 # Configuration of the Web page
 st.set_page_config(page_title ="Crous menu ChatBot")
@@ -29,7 +29,7 @@ chain = SQLDatabaseToolkit(db=db, llm=llm)
 tools = chain.get_tools()
 
 # Load the prompt
-with open('prompt.txt', 'r', encoding='utf-8') as prompt:
+with open('environment/prompt.txt', 'r', encoding='utf-8') as prompt:
     prompt = prompt.read().format(
             table_names=db.get_usable_table_names()
         )
@@ -54,7 +54,7 @@ with st.sidebar:
     #st.image("img/", width=280)
     st.subheader("Pre-selected Questions :")
     preselected_questions = [
-        "Question1",
+        "How many restaurant are there ?",
         "Question2",
         "Question3"
     ]
