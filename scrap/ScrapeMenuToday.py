@@ -47,5 +47,3 @@ def ScrapeMenu(link):
     driver.quit()
     
     return text
-
-print(ScrapeMenu('https://www.crous-strasbourg.fr/restaurant/cafeteria-le-pege-2/'))
