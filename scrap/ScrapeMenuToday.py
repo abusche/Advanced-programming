@@ -1,14 +1,10 @@
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import pandas as pd
-
+from selenium.webdriver.firefox.options import Options
 
 def ScrapeMenu(link):
-    menuInfo = {"day": [], "lunch": [], "dinner": []}
-    
     driver = webdriver.Firefox()
     driver.get(link)
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
@@ -46,15 +42,10 @@ def ScrapeMenu(link):
         dinner = ""
     
     # Do dataframe
-    menuInfo["day"].append(scraped_day)
-    menuInfo["lunch"].append(lunch)
-    menuInfo["dinner"].append(dinner)
+    text = f"Lunch:\n{lunch}\nDinner:{dinner}"
 
     driver.quit()
     
-    return pd.DataFrame(menuInfo)
+    return text
 
-link = "https://www.crous-strasbourg.fr/restaurant/resto-u-gallia-2/"
-
-menuDB = ScrapeMenu(link)
-print(menuDB)
+print(ScrapeMenu('https://www.crous-strasbourg.fr/restaurant/cafeteria-le-pege-2/'))
