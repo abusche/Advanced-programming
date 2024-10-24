@@ -2,8 +2,10 @@ from transformers import AutoModelForTokenClassification, pipeline, AutoTokenize
 from sentence_transformers import SentenceTransformer
 import torch
 import os
+from dotenv import load_dotenv
 
-hf_token = "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"
+load_dotenv("C:/Users/busch/OneDrive/Documents/Fac/M2/UE1 - Advanced programming and data visualization/Advanced programming/projet/environment/.env")
+hf_token = os.getenv("HUGGING_FACE_KEY")
 custom_cache_dir = "/home/peltouz/Documents/pretrain"
 
 os.environ['HF_HOME'] = custom_cache_dir  # Hugging Face home directory for all HF operations
