@@ -1,9 +1,6 @@
 import os
 import streamlit as st
-from ScrapeMenuToday import ScrapeMenu
-from hf_functions import get_link
-from ScrapeMenuToday import ScrapeMenu
-from hf_functions import get_link
+from menu_functions import get_menu
 
 # Configuration of the Web page
 st.set_page_config(page_title ="Crous menu ChatBot")
@@ -59,7 +56,7 @@ if query:
     # Some aspects of visualization
     with st.spinner("Loading..."):
         with st.chat_message("assistant"):
-            response = ScrapeMenu(get_link(query)[0])["lunch"][0]
+            response = get_menu(query)
             st.markdown(response)
             st.session_state.messages.append({"role": "assistant", "content": response})
 
