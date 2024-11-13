@@ -4,6 +4,11 @@ from sentence_transformers import SentenceTransformer
 import torch
 import os
 from dotenv import load_dotenv
+from langchain_community.document_loaders import PyPDFLoader
+from PyPDF2 import PdfWriter
+from PyPDF2 import PdfReader
+from reportlab.pdfgen import canvas
+from io import BytesIO
 
 load_dotenv("C:/Users/busch/OneDrive/Documents/Fac/M2/UE1 - Advanced programming and data visualization/Advanced programming/projet/environment/.env")
 hf_token = os.getenv("HUGGING_FACE_KEY")
@@ -53,7 +58,13 @@ def get_link(question):
         if entity_group == "ORG" or entity_group == "LOC":
             resto.append(ent[i]['word'])
     link = resto_link(resto)
-    return link
+    return link, resto[0]
+
+def translator(language_from, language_to, text):
+    if language_from == "fr" and language_to == "en":
+        api_translator = pipeline("translation", model="Helsinki-NLP/opus-mt-fr-en")
+        translation = api_translator(text)[0]['translation_text']
+    return translation
 
 def clean_menu(dirty_menu):
     menu = ""
@@ -62,30 +73,66 @@ def clean_menu(dirty_menu):
     elements = dirty_menu.split("none")
     for k in range(1,len(elements)):
         if k != 0: # and k != len(elements)-1:
-            el_menu_cleaned_str += f"{k}) " + elements[k].replace("- ", "").split("\n")[0] + "\n\n"
+            el_menu_cleaned_str += "- " + translator("fr", "en", elements[k].replace("- ", "").split("\n")[0]) + "\n\n"
             el_menu_dirty = elements[k].replace("- ", "").split("\n")[1:]
             el_menu_dirty_2 = [item.strip() for item in el_menu_dirty if item.strip()]
             el_menu_cleaned = []
             for item in el_menu_dirty_2:
-                if item == '-' or item not in el_menu_cleaned:
-                    el_menu_cleaned.append(item)
+                item_trad = translator("fr", "en", item)
+                if item_trad == '-' or item_trad not in el_menu_cleaned:
+                    el_menu_cleaned.append(item_trad)
             valid = False
             while valid == False:
                 if el_menu_cleaned[len(el_menu_cleaned)-1] == "-":
                     el_menu_cleaned = el_menu_cleaned[:-1]
                 else:
                     valid = True
+            for i in range(len(el_menu_cleaned)):
+                if el_menu_cleaned[i] == "-":
+                    el_menu_cleaned[i] = ""
             for mu in el_menu_cleaned:
                 el_menu_cleaned_str += mu + "\n"
             el_menu_cleaned_str += "\n"
     return el_menu_cleaned_str
 
+def menu_to_pdf(question):
+    file_path = "C:/Users/busch/OneDrive/Documents/Fac/M2/UE1 - Advanced programming and data visualization/Advanced programming/projet/dirty_file/menu.pdf"
+    loader = PyPDFLoader(file_path)
+
+    # Extraire le texte du fichier PDF
+    docs = loader.load()
+    extracted_text = "\n".join([doc.page_content for doc in docs])
+
+    # Remplacer le texte par le texte personnalisé
+    menu = get_menu(question)
+
+    # Sauvegarder dans un nouveau fichier PDF
+    output_path = "C:/Users/busch/OneDrive/Documents/Fac/M2/UE1 - Advanced programming and data visualization/Advanced programming/projet/dirty_file/menu.pdf"
+    pdf_writer = PdfWriter()
+
+    # Ajouter une seule page contenant le nouveau texte (simplification)
+    packet = BytesIO()
+    can = canvas.Canvas(packet)
+    can.drawString(100, 750, menu)  # Position du texte sur la page
+    can.save()
+
+    packet.seek(0)
+    new_pdf = PdfReader(packet)
+
+    # Ajout de la nouvelle page au PDF
+    pdf_writer.add_page(new_pdf.pages[0])
+
+    # Écriture dans le fichier de sortie
+    with open(output_path, "wb") as out_file:
+        pdf_writer.write(out_file)
+
 def get_menu(question):
-    links = get_link(question)
+    links, resto = get_link(question)
     dirty_menu = ""
     for link in links:
         dirty_menu += "\n \n" + ScrapeMenu(link)["lunch"][0]
-    menu = clean_menu(dirty_menu)
+    menu = "Menu " + resto + " : \n \n" + clean_menu(dirty_menu)
+    
     return menu
 
 
