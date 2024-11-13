@@ -11,7 +11,7 @@ from reportlab.pdfgen import canvas
 from io import BytesIO
 
 # Load environment variables from a .env file
-load_dotenv("C:/Users/busch/OneDrive/Documents/Fac/M2/UE1 - Advanced programming and data visualization/Advanced programming/projet/environment/.env")
+load_dotenv()
 hf_token = os.getenv("HUGGING_FACE_KEY")
 custom_cache_dir = "/home/peltouz/Documents/pretrain"
 
@@ -118,7 +118,7 @@ def menu_to_pdf(question):
     """
     Generates a PDF containing a menu based on a user question. Retrieves and processes the menu.
     """
-    file_path = "C:/Users/busch/OneDrive/Documents/Fac/M2/UE1 - Advanced programming and data visualization/Advanced programming/projet/dirty_file/menu.pdf"
+    file_path = "menu.pdf"
     loader = PyPDFLoader(file_path)
 
     # Extraire le texte du fichier PDF
@@ -129,7 +129,7 @@ def menu_to_pdf(question):
     menu = get_menu(question)
 
     # Sauvegarder dans un nouveau fichier PDF
-    output_path = "C:/Users/busch/OneDrive/Documents/Fac/M2/UE1 - Advanced programming and data visualization/Advanced programming/projet/dirty_file/menu.pdf"
+    output_path = "menu.pdf"
     pdf_writer = PdfWriter()
 
     # Ajouter une seule page contenant le nouveau texte (simplification)
