@@ -8,8 +8,6 @@ st.set_page_config(page_title ="Crous menu ChatBot")
 # Give a title
 st.title("Crous menu ChatBot")
 
-
-
 # Initialization of session state and first bot message
 if "messages" not in st.session_state:
     st.session_state.messages = [

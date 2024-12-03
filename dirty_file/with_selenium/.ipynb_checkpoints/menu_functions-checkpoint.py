@@ -9,11 +9,15 @@ from PyPDF2 import PdfWriter
 from PyPDF2 import PdfReader
 from reportlab.pdfgen import canvas
 from io import BytesIO
+import time
 
-load_dotenv("C:/Users/busch/OneDrive/Documents/Fac/M2/UE1 - Advanced programming and data visualization/Advanced programming/projet/environment/.env")
+# Load environment variables from a .env file
+path = "C:/Users/busch/OneDrive/Documents/Fac/M2/UE1 - Advanced programming and data visualization/Advanced Programming/projet/environment/"
+load_dotenv(f"{path}.env")
 hf_token = os.getenv("HUGGING_FACE_KEY")
 custom_cache_dir = "/home/peltouz/Documents/pretrain"
 
+# Configure environment variables for Hugging Face operations
 os.environ['HF_HOME'] = custom_cache_dir  # Hugging Face home directory for all HF operations
 os.environ['TRANSFORMERS_CACHE'] = custom_cache_dir  # Transformers-specific cache directory
 os.environ['HF_DATASETS_CACHE'] = custom_cache_dir  # Datasets-specific cache directory
@@ -21,6 +25,10 @@ os.environ['HF_METRICS_CACHE'] = custom_cache_dir  # Metrics-specific cache dire
 os.environ['HF_TOKEN'] = hf_token  # Hugging Face API token
 
 def HF_model(model, question):
+    """
+    Loads a specific Hugging Face model for named entity recognition (NER) based on the input model type.
+    Processes a question string to extract named entities.
+    """
     if model == "hours":
         m = AutoModelForTokenClassification.from_pretrained("DAMO-NLP-SG/roberta-time_identification")
         tokenizer = AutoTokenizer.from_pretrained("DAMO-NLP-SG/roberta-time_identification")
@@ -35,6 +43,10 @@ def HF_model(model, question):
     return ner_results
 
 def resto_link(resto):
+    """
+    Matches restaurant names from a list against predefined vectors using cosine similarity.
+    Generates URLs for restaurant information.
+    """
     model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
     vec_resto = ["cafeteria le pege", "resto u gallia", "resto u esplanade", "resto u paul appell", "le 32", "lannexe", 
                  "resto u illkirch", "cafeteria mini r", "resto u cronenbourg", "le cristal shop ru esplanade"]
@@ -51,6 +63,9 @@ def resto_link(resto):
     return link
 
 def get_link(question):
+    """
+    Extracts restaurant-related entities from a question string and generates corresponding links using the functions resto_link and HF_model.
+    """
     resto = []
     ent = HF_model("loc", question)
     for i in range(len(ent)):
@@ -61,26 +76,33 @@ def get_link(question):
     return link, resto[0]
 
 def translator(language_from, language_to, text):
+    """
+    Translates text from one language to another using a Hugging Face translation model.
+    """
     if language_from == "fr" and language_to == "en":
         api_translator = pipeline("translation", model="Helsinki-NLP/opus-mt-fr-en")
         translation = api_translator(text)[0]['translation_text']
     return translation
 
 def clean_menu(dirty_menu):
+    """
+    Cleans and translates a raw menu string. Splits into components and formats the output.
+    """
     menu = ""
     el_menu_cleaned_str = ""
     dirty_menu_2 = []
     elements = dirty_menu.split("none")
     for k in range(1,len(elements)):
         if k != 0: # and k != len(elements)-1:
-            el_menu_cleaned_str += "- " + translator("fr", "en", elements[k].replace("- ", "").split("\n")[0]) + "\n\n"
+            #el_menu_cleaned_str += "- " + translator("fr", "en", elements[k].replace("- ", "").split("\n")[0]) + "\n\n"
+            el_menu_cleaned_str += "- " + elements[k].replace("- ", "").split("\n")[0] + "\n\n"
             el_menu_dirty = elements[k].replace("- ", "").split("\n")[1:]
             el_menu_dirty_2 = [item.strip() for item in el_menu_dirty if item.strip()]
             el_menu_cleaned = []
             for item in el_menu_dirty_2:
-                item_trad = translator("fr", "en", item)
-                if item_trad == '-' or item_trad not in el_menu_cleaned:
-                    el_menu_cleaned.append(item_trad)
+                #item_trad = translator("fr", "en", item)
+                if item == '-' or item not in el_menu_cleaned:
+                    el_menu_cleaned.append(item)
             valid = False
             while valid == False:
                 if el_menu_cleaned[len(el_menu_cleaned)-1] == "-":
@@ -96,7 +118,10 @@ def clean_menu(dirty_menu):
     return el_menu_cleaned_str
 
 def menu_to_pdf(question):
-    file_path = "C:/Users/busch/OneDrive/Documents/Fac/M2/UE1 - Advanced programming and data visualization/Advanced programming/projet/dirty_file/menu.pdf"
+    """
+    Generates a PDF containing a menu based on a user question. Retrieves and processes the menu.
+    """
+    file_path = f"{path}menu.pdf"
     loader = PyPDFLoader(file_path)
 
     # Extraire le texte du fichier PDF
@@ -105,9 +130,9 @@ def menu_to_pdf(question):
 
     # Remplacer le texte par le texte personnalisé
     menu = get_menu(question)
-
+    
     # Sauvegarder dans un nouveau fichier PDF
-    output_path = "C:/Users/busch/OneDrive/Documents/Fac/M2/UE1 - Advanced programming and data visualization/Advanced programming/projet/dirty_file/menu.pdf"
+    output_path = f"{path}menu.pdf"
     pdf_writer = PdfWriter()
 
     # Ajouter une seule page contenant le nouveau texte (simplification)
@@ -127,6 +152,9 @@ def menu_to_pdf(question):
         pdf_writer.write(out_file)
 
 def get_menu(question):
+    """
+    Retrieves and cleans the menu for a specific restaurant mentioned in the question.
+    """
     links, resto = get_link(question)
     dirty_menu = ""
     for link in links:
