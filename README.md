@@ -1,6 +1,6 @@
 # Crous menu application
 
-The aim of this project is to develop an application that can be used to find out about menus at the Crous of the University of Strasbourg.
+The aim of this project is to develop an application that can be used to find out about menus at the Crous (University Restaurant) of the University of Strasbourg.
 Our aim is to create an interactive application that lets you chat with an AI via an instant messaging system via Dash, Streamlit or/and WhatsApp.
 
 To do this, we are going to use webscrapping to obtain information about the menus at the Crous de Strasbourg and store it in an SQL database.
