@@ -20,6 +20,8 @@ from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 
+import langid
+
 # Load environment variables from a .env file
 path = "C:/Users/busch/OneDrive/Documents/Fac/M2/UE1 - Advanced programming and data visualization/Advanced Programming/projet/environment/"
 load_dotenv(f"{path}.env")
@@ -279,3 +281,27 @@ def rag(question, llm):
     rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 
     return rag_chain
+
+
+# For translation of texts
+def translate_text(text, target_lang="EN"):
+    params = {
+        "auth_key": "***",
+        "text": text,
+        "target_lang": target_lang
+    }
+    
+    response = requests.post("https://api-free.deepl.com/v2/translate", data=params)
+
+    if response.status_code == 200:
+        return response.json()["translations"][0]["text"]
+    else:
+        return None
+    
+# To find the language of a text
+def detect_language(text):
+    try:
+        language = langid.classify(text)[0]
+        return language
+    except Exception as e:
+        return None
