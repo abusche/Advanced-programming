@@ -20,8 +20,6 @@ from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 
-import langid
-
 # Load environment variables from a .env file
 path = "C:/Users/busch/OneDrive/Documents/Fac/M2/UE1 - Advanced programming and data visualization/Advanced Programming/projet/environment/"
 load_dotenv(f"{path}.env")
@@ -133,7 +131,7 @@ def page(urlpage):
     Récupération du HTML d'un site internet via Beautifulsoup
     """
     user_agent = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0'}
-    time.sleep(0 + np.random.rand()/5) # Retarder le téléchargement pour pas se faire ban
+    time.sleep(0 + np.random.rand()/5)
     res = requests.get(urlpage, headers = user_agent)
     soup = BeautifulSoup(res.text, 'html.parser')
     return soup
@@ -249,16 +247,16 @@ def rag(question, llm):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     splits = text_splitter.split_text(menus)
     
-    # Transformation des textes en objets Document
+    #Transforming text into Document objects
     documents = [Document(page_content=split) for split in splits]
     
-    # Création du vectorstore
+    # Creation of the vectorstore
     vectorstore = InMemoryVectorStore.from_documents(
         documents=documents, embedding=OpenAIEmbeddings()
     )
     retriever = vectorstore.as_retriever()
     
-    # Création du prompt
+    # Prompt
     system_prompt = (
         "You are an assistant for question-answering tasks about the menu of university restaurant. "
         "If you don't specify a specific dish, you should always give today's meal or the nearest one. "
@@ -281,27 +279,3 @@ def rag(question, llm):
     rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 
     return rag_chain
-
-
-# For translation of texts
-def translate_text(text, target_lang="EN"):
-    params = {
-        "auth_key": "***",
-        "text": text,
-        "target_lang": target_lang
-    }
-    
-    response = requests.post("https://api-free.deepl.com/v2/translate", data=params)
-
-    if response.status_code == 200:
-        return response.json()["translations"][0]["text"]
-    else:
-        return None
-    
-# To find the language of a text
-def detect_language(text):
-    try:
-        language = langid.classify(text)[0]
-        return language
-    except Exception as e:
-        return None
