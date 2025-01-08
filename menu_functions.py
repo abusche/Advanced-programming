@@ -279,3 +279,18 @@ def rag(question, llm):
     rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 
     return rag_chain
+
+
+def get_geocode_opencage(address):
+    url = "https://api.opencagedata.com/geocode/v1/json"
+    params = {"q": address, "key": "2e2de99554ac414a8ad930ee7347e3ab"}
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        data = response.json()
+        if data["results"]:
+            location = data["results"][0]["geometry"]
+            return location["lat"], location["lng"]
+        else:
+            return None
+    else:
+        return None
