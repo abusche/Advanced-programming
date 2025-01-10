@@ -305,6 +305,8 @@ def translate_text(text, target_language):
 
 
 def detect_language(text):
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:/Users/diego/Desktop/Crous-menu-application/environment/translate-project-447409-d76e1b17f268.json"
+
     translate_client = translate.Client()
     result = translate_client.detect_language(text)['language']
     return result
