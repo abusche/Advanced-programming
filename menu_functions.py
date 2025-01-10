@@ -294,3 +294,17 @@ def get_geocode_opencage(address):
             return None
     else:
         return None
+
+
+def translate_text(text, target_language):
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:/Users/diego/Desktop/Crous-menu-application/environment/translate-project-447409-d76e1b17f268.json"
+    
+    translate_client = translate.Client()  # Usa il file di credenziali
+    result = translate_client.translate(text, target_language=target_language)
+    return result["translatedText"]
+
+
+def detect_language(text):
+    translate_client = translate.Client()
+    result = translate_client.detect_language(text)['language']
+    return result
