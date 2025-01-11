@@ -131,7 +131,7 @@ def page(urlpage):
     Récupération du HTML d'un site internet via Beautifulsoup
     """
     user_agent = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0'}
-    time.sleep(0 + np.random.rand()/5) # Retarder le téléchargement pour pas se faire ban
+    time.sleep(0 + np.random.rand()/5)
     res = requests.get(urlpage, headers = user_agent)
     soup = BeautifulSoup(res.text, 'html.parser')
     return soup
@@ -247,16 +247,16 @@ def rag(question, llm):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     splits = text_splitter.split_text(menus)
     
-    # Transformation des textes en objets Document
+    #Transforming text into Document objects
     documents = [Document(page_content=split) for split in splits]
     
-    # Création du vectorstore
+    # Creation of the vectorstore
     vectorstore = InMemoryVectorStore.from_documents(
         documents=documents, embedding=OpenAIEmbeddings()
     )
     retriever = vectorstore.as_retriever()
     
-    # Création du prompt
+    # Prompt
     system_prompt = (
         "You are an assistant for question-answering tasks about the menu of university restaurant. "
         "If you don't specify a specific dish, you should always give today's meal or the nearest one. "
@@ -279,3 +279,34 @@ def rag(question, llm):
     rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 
     return rag_chain
+
+
+def get_geocode_opencage(address):
+    url = "https://api.opencagedata.com/geocode/v1/json"
+    params = {"q": address, "key": "2e2de99554ac414a8ad930ee7347e3ab"}
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        data = response.json()
+        if data["results"]:
+            location = data["results"][0]["geometry"]
+            return location["lat"], location["lng"]
+        else:
+            return None
+    else:
+        return None
+
+
+def translate_text(text, target_language):
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:/Users/diego/Desktop/Crous-menu-application/environment/translate-project-447409-d76e1b17f268.json"
+    
+    translate_client = translate.Client()  # Usa il file di credenziali
+    result = translate_client.translate(text, target_language=target_language)
+    return result["translatedText"]
+
+
+def detect_language(text):
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:/Users/diego/Desktop/Crous-menu-application/environment/translate-project-447409-d76e1b17f268.json"
+
+    translate_client = translate.Client()
+    result = translate_client.detect_language(text)['language']
+    return result
