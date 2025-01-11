@@ -20,6 +20,8 @@ from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 
+from google.cloud import translate_v2 as translate
+
 # Load environment variables from a .env file
 path = "C:/Users/busch/OneDrive/Documents/Fac/M2/UE1 - Advanced programming and data visualization/Advanced Programming/projet/environment/"
 load_dotenv(f"{path}.env")
