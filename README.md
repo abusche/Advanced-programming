@@ -9,10 +9,11 @@
 
 # File Structure and Functionality :
 
-* ```requirements.txt``` : Lists the required Python libraries and dependencies, including:
+1) ```requirements.txt``` : Lists the required Python libraries and dependencies, including:
 Install all packages with : ```pip install -r requirements.txt```
 
 - NLP frameworks: langchain, transformers, sentence-transformers
 - Web scraping: beautifulsoup4, requests
 - Other utilities: pandas, streamlit, numpy, google-cloud-translate
 
+2) ```requirements.txt```
