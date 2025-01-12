@@ -1,7 +1,7 @@
 import os
 import streamlit as st
 from langchain_openai import ChatOpenAI
-from menu_functions import rag
+from menu_functions import rag, detect_language
 from dotenv import load_dotenv
 
 # Chemin du fichier .env
@@ -118,13 +118,14 @@ def main():
     
     # Entrée utilisateur
     question = st.chat_input("💬 Enter your question here...")
-
+    
     # Utiliser la question pré-sélectionnée si elle existe
     if st.session_state.selected_question:
         question = "Give me the menu at " + st.session_state.selected_question
         st.session_state.selected_question = None
     
     if question:
+        language = detect_language(question)
         st.session_state.messages.append({"role": "user", "content": question})
         with st.chat_message("user"):
             st.markdown(question)
@@ -132,7 +133,7 @@ def main():
         if not st.session_state["context_loaded"]:
             with st.spinner("⏳ Loading..."):
 
-                rag_chain = rag(question, llm)
+                rag_chain = rag(question, llm, language)
 
                 # Sauvegarder l'état dans la session
                 st.session_state["context_loaded"] = True
