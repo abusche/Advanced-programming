@@ -5,7 +5,7 @@ from menu_functions import rag, detect_language
 from dotenv import load_dotenv
 
 # path
-ENV_PATH = "C:/Users/busch/OneDrive/Documents/Fac/M2/UE1 - Advanced programming and data visualization/Advanced Programming/projet/environment/"
+ENV_PATH = ".../environment/"
 
 # Environment
 load_dotenv(f"{ENV_PATH}.env")

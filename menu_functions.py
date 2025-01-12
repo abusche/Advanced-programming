@@ -25,7 +25,7 @@ from langchain_core.prompts import PromptTemplate
 from google.cloud import translate_v2 as translate
 
 # Load environment variables from a .env file
-path = "C:/Users/busch/OneDrive/Documents/Fac/M2/UE1 - Advanced programming and data visualization/Advanced Programming/projet/environment/"
+path = ".../environment/"
 load_dotenv(f"{path}.env")
 hf_token = os.getenv("HUGGING_FACE_KEY")
 custom_cache_dir = "/home/peltouz/Documents/pretrain"
