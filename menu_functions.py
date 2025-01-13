@@ -360,17 +360,18 @@ def add_allergens(menu, similarity_threshold=0.5):
         if max_similarity_score < similarity_threshold:
             return None
 
-        # Recover allergens from similar dishes
-        most_similar_recipe = df.iloc[most_similar_index]
-        allergies = {
-            "Gluten": most_similar_recipe['Gluten'], "Eggs": most_similar_recipe['Eggs'],
-            "Peanut": most_similar_recipe['Peanut'], "Lactose": most_similar_recipe['Lactose'],
-            "Soy": most_similar_recipe['Soy'], "Nut": most_similar_recipe['Nut'],
-            "Celery": most_similar_recipe['Celery'], "Mustard": most_similar_recipe['Mustard'],
-            "Sesame": most_similar_recipe['Sesame'], "Lupins": most_similar_recipe['Lupins'],
-            "Molluscs": most_similar_recipe['Molluscs']
-        }
-        return ", ".join([k for k, v in allergies.items() if v == 1])
+        else:
+            # Recover allergens from similar dishes
+            most_similar_recipe = df.iloc[most_similar_index]
+            allergies = {
+                "Gluten": most_similar_recipe['Gluten'], "Eggs": most_similar_recipe['Eggs'],
+                "Peanut": most_similar_recipe['Peanut'], "Lactose": most_similar_recipe['Lactose'],
+                "Soy": most_similar_recipe['Soy'], "Nut": most_similar_recipe['Nut'],
+                "Celery": most_similar_recipe['Celery'], "Mustard": most_similar_recipe['Mustard'],
+                "Sesame": most_similar_recipe['Sesame'], "Lupins": most_similar_recipe['Lupins'],
+                "Molluscs": most_similar_recipe['Molluscs']
+            }
+            return ", ".join([k for k, v in allergies.items() if v == 1])
 
     def process_menu_section(section):
         """
